@@ -58,14 +58,26 @@ Call once class has been instantiated, typically within setup().
 @param &serial reference to serial port object (Serial, Serial1, ... Serial3)
 @ingroup setup
 */
-void ModbusMaster::begin(uint8_t slave, Stream &serial)
+void ModbusMaster::begin(uint32_t baud, Stream &serial)
 {
 //  txBuffer = (uint16_t*) calloc(ku8MaxBufferSize, sizeof(uint16_t));
-  _u8MBSlave = slave;
   _serial = &serial;
   _u8TransmitBufferIndex = 0;
   u16TransmitBufferLength = 0;
+  baudRate = 9600;
   
+  // calculate inter character timeout and frame delay (silent interval)
+	if (baudRate > 19200)
+	{
+		T1_5 = 750; // 750 us
+		T3_5 = 1750; // 1750 us
+	}
+	else
+	{
+		T1_5 = 16500000 / baudRate; // 1 packet = 11 bits
+		T3_5 = 38500000 / baudRate; // 1 packet = 11 bits
+	}
+
 #if __MODBUSMASTER_DEBUG__
   pinMode(__MODBUSMASTER_DEBUG_PIN_A__, OUTPUT);
   pinMode(__MODBUSMASTER_DEBUG_PIN_B__, OUTPUT);
@@ -318,8 +330,9 @@ order end of the word).
 @return 0 on success; exception number on failure
 @ingroup discrete
 */
-uint8_t ModbusMaster::readCoils(uint16_t u16ReadAddress, uint16_t u16BitQty)
+uint8_t ModbusMaster::readCoils(uint8_t slave, uint16_t u16ReadAddress, uint16_t u16BitQty)
 {
+  _u8MBSlave = slave;
   _u16ReadAddress = u16ReadAddress;
   _u16ReadQty = u16BitQty;
   return ModbusMasterTransaction(ku8MBReadCoils);
@@ -349,9 +362,10 @@ order end of the word).
 @return 0 on success; exception number on failure
 @ingroup discrete
 */
-uint8_t ModbusMaster::readDiscreteInputs(uint16_t u16ReadAddress,
+uint8_t ModbusMaster::readDiscreteInputs(uint8_t slave, uint16_t u16ReadAddress,
   uint16_t u16BitQty)
 {
+  _u8MBSlave = slave;
   _u16ReadAddress = u16ReadAddress;
   _u16ReadQty = u16BitQty;
   return ModbusMasterTransaction(ku8MBReadDiscreteInputs);
@@ -374,9 +388,10 @@ register.
 @return 0 on success; exception number on failure
 @ingroup register
 */
-uint8_t ModbusMaster::readHoldingRegisters(uint16_t u16ReadAddress,
+uint8_t ModbusMaster::readHoldingRegisters(uint8_t slave, uint16_t u16ReadAddress,
   uint16_t u16ReadQty)
 {
+  _u8MBSlave = slave;
   _u16ReadAddress = u16ReadAddress;
   _u16ReadQty = u16ReadQty;
   return ModbusMasterTransaction(ku8MBReadHoldingRegisters);
@@ -399,9 +414,10 @@ register.
 @return 0 on success; exception number on failure
 @ingroup register
 */
-uint8_t ModbusMaster::readInputRegisters(uint16_t u16ReadAddress,
+uint8_t ModbusMaster::readInputRegisters(uint8_t slave, uint16_t u16ReadAddress,
   uint8_t u16ReadQty)
 {
+  _u8MBSlave = slave;
   _u16ReadAddress = u16ReadAddress;
   _u16ReadQty = u16ReadQty;
   return ModbusMasterTransaction(ku8MBReadInputRegisters);
@@ -422,8 +438,9 @@ address of the coil to be forced. Coils are addressed starting at zero.
 @return 0 on success; exception number on failure
 @ingroup discrete
 */
-uint8_t ModbusMaster::writeSingleCoil(uint16_t u16WriteAddress, uint8_t u8State)
+uint8_t ModbusMaster::writeSingleCoil(uint8_t slave, uint16_t u16WriteAddress, uint8_t u8State)
 {
+  _u8MBSlave = slave;
   _u16WriteAddress = u16WriteAddress;
   _u16WriteQty = (u8State ? 0xFF00 : 0x0000);
   return ModbusMasterTransaction(ku8MBWriteSingleCoil);
@@ -442,7 +459,7 @@ written. Registers are addressed starting at zero.
 @return 0 on success; exception number on failure
 @ingroup register
 */
-uint8_t ModbusMaster::writeSingleRegister(uint16_t u16WriteAddress,
+uint8_t ModbusMaster::writeSingleRegister(uint8_t slave, uint16_t u16WriteAddress,
   uint16_t u16WriteValue)
 {
   _u16WriteAddress = u16WriteAddress;
@@ -468,9 +485,10 @@ corresponding output to be ON. A logical '0' requests it to be OFF.
 @return 0 on success; exception number on failure
 @ingroup discrete
 */
-uint8_t ModbusMaster::writeMultipleCoils(uint16_t u16WriteAddress,
+uint8_t ModbusMaster::writeMultipleCoils(uint8_t slave, uint16_t u16WriteAddress,
   uint16_t u16BitQty)
 {
+  _u8MBSlave = slave;
   _u16WriteAddress = u16WriteAddress;
   _u16WriteQty = u16BitQty;
   return ModbusMasterTransaction(ku8MBWriteMultipleCoils);
@@ -496,9 +514,10 @@ is packed as one word per register.
 @return 0 on success; exception number on failure
 @ingroup register
 */
-uint8_t ModbusMaster::writeMultipleRegisters(uint16_t u16WriteAddress,
+uint8_t ModbusMaster::writeMultipleRegisters(uint8_t slave, uint16_t u16WriteAddress,
   uint16_t u16WriteQty)
 {
+  _u8MBSlave = slave;
   _u16WriteAddress = u16WriteAddress;
   _u16WriteQty = u16WriteQty;
   return ModbusMasterTransaction(ku8MBWriteMultipleRegisters);
@@ -534,9 +553,10 @@ Result = (Current Contents && And_Mask) || (Or_Mask && (~And_Mask))
 @return 0 on success; exception number on failure
 @ingroup register
 */
-uint8_t ModbusMaster::maskWriteRegister(uint16_t u16WriteAddress,
+uint8_t ModbusMaster::maskWriteRegister(uint8_t slave, uint16_t u16WriteAddress,
   uint16_t u16AndMask, uint16_t u16OrMask)
 {
+  _u8MBSlave = slave;
   _u16WriteAddress = u16WriteAddress;
   _u16TransmitBuffer[0] = u16AndMask;
   _u16TransmitBuffer[1] = u16OrMask;
@@ -564,18 +584,20 @@ buffer.
 @return 0 on success; exception number on failure
 @ingroup register
 */
-uint8_t ModbusMaster::readWriteMultipleRegisters(uint16_t u16ReadAddress,
+uint8_t ModbusMaster::readWriteMultipleRegisters(uint8_t slave, uint16_t u16ReadAddress,
   uint16_t u16ReadQty, uint16_t u16WriteAddress, uint16_t u16WriteQty)
 {
+  _u8MBSlave = slave;
   _u16ReadAddress = u16ReadAddress;
   _u16ReadQty = u16ReadQty;
   _u16WriteAddress = u16WriteAddress;
   _u16WriteQty = u16WriteQty;
   return ModbusMasterTransaction(ku8MBReadWriteMultipleRegisters);
 }
-uint8_t ModbusMaster::readWriteMultipleRegisters(uint16_t u16ReadAddress,
+uint8_t ModbusMaster::readWriteMultipleRegisters(uint8_t slave, uint16_t u16ReadAddress,
   uint16_t u16ReadQty)
 {
+  _u8MBSlave = slave;
   _u16ReadAddress = u16ReadAddress;
   _u16ReadQty = u16ReadQty;
   _u16WriteQty = _u8TransmitBufferIndex;
@@ -720,6 +742,11 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
   {
     _postTransmission();
   }
+
+  // -----------------------------------
+	// - inter frame delay (silent interval) 
+	delayMicroseconds(T3_5);
+	// -----------------------------------
   
   // loop until we run out of time or bytes, or an error occurs
   u32StartTime = millis();
@@ -749,6 +776,12 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
       digitalWrite(__MODBUSMASTER_DEBUG_PIN_B__, false);
 #endif
     }
+
+    // -----------------------------------
+		// inter character timeout
+		// -----------------------------------
+		delayMicroseconds(T1_5);
+		// -----------------------------------
     
     // evaluate slave ID, function code once enough bytes have been read
     if (u8ModbusADUSize == 5)
@@ -868,6 +901,11 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
         break;
     }
   }
+
+  // -----------------------------------
+	// - post response delay (this proved necessary when trying to call one slave after the other)
+  delay(50);
+	// -----------------------------------
   
   _u8TransmitBufferIndex = 0;
   u16TransmitBufferLength = 0;

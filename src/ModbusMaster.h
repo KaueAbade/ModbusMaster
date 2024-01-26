@@ -68,10 +68,17 @@ RS232/485 (via RTU protocol).
 */
 class ModbusMaster
 {
+  protected:
+	  uint32_t baudRate;
+
+    // timing
+	  uint32_t T1_5; // inter character timeout
+	  uint32_t T3_5; // frame delay (silent interval)
+
   public:
     ModbusMaster();
    
-    void begin(uint8_t, Stream &serial);
+    void begin(uint32_t, Stream &serial);
     void idle(void (*)());
     void preTransmission(void (*)());
     void postTransmission(void (*)());
@@ -203,19 +210,19 @@ class ModbusMaster
     uint16_t receive(void);
     
     
-    uint8_t  readCoils(uint16_t, uint16_t);
-    uint8_t  readDiscreteInputs(uint16_t, uint16_t);
-    uint8_t  readHoldingRegisters(uint16_t, uint16_t);
-    uint8_t  readInputRegisters(uint16_t, uint8_t);
-    uint8_t  writeSingleCoil(uint16_t, uint8_t);
-    uint8_t  writeSingleRegister(uint16_t, uint16_t);
-    uint8_t  writeMultipleCoils(uint16_t, uint16_t);
+    uint8_t  readCoils(uint8_t, uint16_t, uint16_t);
+    uint8_t  readDiscreteInputs(uint8_t, uint16_t, uint16_t);
+    uint8_t  readHoldingRegisters(uint8_t, uint16_t, uint16_t);
+    uint8_t  readInputRegisters(uint8_t, uint16_t, uint8_t);
+    uint8_t  writeSingleCoil(uint8_t, uint16_t, uint8_t);
+    uint8_t  writeSingleRegister(uint8_t, uint16_t, uint16_t);
+    uint8_t  writeMultipleCoils(uint8_t, uint16_t, uint16_t);
     uint8_t  writeMultipleCoils();
-    uint8_t  writeMultipleRegisters(uint16_t, uint16_t);
+    uint8_t  writeMultipleRegisters(uint8_t, uint16_t, uint16_t);
     uint8_t  writeMultipleRegisters();
-    uint8_t  maskWriteRegister(uint16_t, uint16_t, uint16_t);
-    uint8_t  readWriteMultipleRegisters(uint16_t, uint16_t, uint16_t, uint16_t);
-    uint8_t  readWriteMultipleRegisters(uint16_t, uint16_t);
+    uint8_t  maskWriteRegister(uint8_t, uint16_t, uint16_t, uint16_t);
+    uint8_t  readWriteMultipleRegisters(uint8_t, uint16_t, uint16_t, uint16_t, uint16_t);
+    uint8_t  readWriteMultipleRegisters(uint8_t, uint16_t, uint16_t);
     
   private:
     Stream* _serial;                                             ///< reference to serial port object
