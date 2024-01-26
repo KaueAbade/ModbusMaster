@@ -2,10 +2,8 @@
 [![GitHub release](https://img.shields.io/github/release/KaueAbade/ModbusMaster.svg?maxAge=3600)][GitHub release]
 [![license](https://img.shields.io/github/license/KaueAbade/ModbusMaster.svg?maxAge=3600)][license]
 
-[GitHub release]:   https://github.com/4-20ma/ModbusMaster
-[Travis]:           https://travis-ci.org/4-20ma/ModbusMaster
+[GitHub release]:   https://github.com/KaueAbade/ModbusMaster
 [license]:          LICENSE
-[code of conduct]:  CODE_OF_CONDUCT.md
 
 
 ## Overview
