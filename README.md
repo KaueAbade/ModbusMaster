@@ -1,8 +1,6 @@
 # ModbusMaster
-[![GitHub release](https://img.shields.io/github/release/4-20ma/ModbusMaster.svg?maxAge=3600)][GitHub release]
-[![Travis](https://img.shields.io/travis/4-20ma/ModbusMaster.svg?maxAge=3600)][Travis]
-[![license](https://img.shields.io/github/license/4-20ma/ModbusMaster.svg?maxAge=3600)][license]
-[![code of conduct](https://img.shields.io/badge/%E2%9D%A4-code%20of%20conduct-blue.svg?maxAge=3600)][code of conduct]
+[![GitHub release](https://img.shields.io/github/release/KaueAbade/ModbusMaster.svg?maxAge=3600)][GitHub release]
+[![license](https://img.shields.io/github/license/KaueAbade/ModbusMaster.svg?maxAge=3600)][license]
 
 [GitHub release]:   https://github.com/4-20ma/ModbusMaster
 [Travis]:           https://travis-ci.org/4-20ma/ModbusMaster
