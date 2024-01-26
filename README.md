@@ -7,7 +7,9 @@
 
 
 ## Overview
-This is an Arduino library for communicating with Modbus slaves over RS232/485 (via RTU protocol).
+This is a fork of the [ModbusMaster](https://github.com/4-20ma/ModbusMaster) Arduino library for communicating with Modbus slaves over RS232/485 (via RTU protocol).
+It adds an Slave Id call to each Modbus function call and a proper T1.5 and T3.5 delay acording to the [Specification and Implementation Guide for MODBUS over serial line](https://www.modbus.org/docs/Modbus_over_serial_line_V1_02.pdf).
+Now the begin function takes the baudRate in place of the slave id (`ModbusMaster::begin(uint32_t baud, Stream &serial)`) and the functions in itself the slave id as in (`uint8_t ModbusMaster::readHoldingRegisters(uint8_t slave, uint16_t u16ReadAddress, uint16_t u16ReadQty)`).
 
 
 ## Features
@@ -34,13 +36,6 @@ Both full-duplex and half-duplex RS232/485 transceivers are supported. Callback 
 
 ## Installation
 
-#### Library Manager
-Install the library into your Arduino IDE using the Library Manager (available from IDE version 1.6.2). Open the IDE and click Sketch > Include Library > Manage Libraries&hellip;
-
-Scroll or search for `ModbusMaster`, then select the version of the library you want to install. Quit/re-launch the IDE to refresh the list; new versions are automatically added to the list, once released on GitHub.
-
-Refer to Arduino Tutorials > Libraries [Using the Library Manager](https://www.arduino.cc/en/Guide/Libraries#toc3).
-
 #### Zip Library
 Refer to Arduino Tutorials > Libraries [Importing a .zip Library](https://www.arduino.cc/en/Guide/Libraries#toc4).
 
@@ -49,29 +44,26 @@ Refer to Arduino Tutorials > Libraries [Manual Installation](https://www.arduino
 
 
 ## Hardware
-This library has been tested with an Arduino [Duemilanove](http://www.arduino.cc/en/Main/ArduinoBoardDuemilanove), PHOENIX CONTACT [nanoLine](https://www.phoenixcontact.com/online/portal/us?1dmy&urile=wcm%3apath%3a/usen/web/main/products/subcategory_pages/standard_logic_modules_p-21-03-03/3329dd38-7c6a-46e1-8260-b9208235d6fe/3329dd38-7c6a-46e1-8260-b9208235d6fe) controller, connected via RS485 using a Maxim [MAX488EPA](http://www.maxim-ic.com/quick_view2.cfm/qv_pk/1111) transceiver.
+This for of the original library has been tested with an Arduino [Uno](http://www.arduino.cc/en/Main/ArduinoBoardDuemilanove) and a Battery Managment controller, connected via RS485 using a Maxim [MAX488EPA](http://www.maxim-ic.com/quick_view2.cfm/qv_pk/1111) transceiver.
 
 
 ## Caveats
-Conforms to Arduino IDE 1.5 Library Specification v2.1 which requires Arduino IDE >= 1.5.
+As the original library, this fork conforms to Arduino IDE 1.5 Library Specification v2.1 which requires Arduino IDE >= 1.5.
 
 Arduinos prior to the Mega have one serial port which must be connected to USB (FTDI) for uploading sketches and to the RS232/485 device/network for running sketches. You will need to disconnect pin 0 (RX) while uploading sketches. After a successful upload, you can reconnect pin 0.
 
 
-## Support
-Please [submit an issue](https://github.com/4-20ma/ModbusMaster/issues) for all questions, bug reports, and feature requests. Email requests will be politely redirected to the issue tracker so others may contribute to the discussion and requestors get a more timely response.
-
-
 ## Example
-The library contains a few sketches that demonstrate use of the `ModbusMaster` library. You can find these in the [examples](https://github.com/4-20ma/ModbusMaster/tree/master/examples) folder.
+The library contains a few modifications of the original sketches from `Doc Walker` to accommodate the modifications made in the `ModbusMaster` library. You can find these in the [examples](https://github.com/KaueAbade/ModbusMaster/tree/master/examples) folder.
 
 ``` cpp
 /*
 
-  Basic.pde - example using ModbusMaster library
+  Basic.pde - example using the ModbusMaster library
 
   Library:: ModbusMaster
   Author:: Doc Walker <4-20ma@wvfans.net>
+  Modified by:: Kauê Abade <kaue.abade@outlook.com>
 
   Copyright:: 2009-2016 Doc Walker
 
@@ -101,8 +93,8 @@ void setup()
   // use Serial (port 0); initialize Modbus communication baud rate
   Serial.begin(19200);
 
-  // communicate with Modbus slave ID 2 over Serial (port 0)
-  node.begin(2, Serial);
+  // communicate with Modbus slave over Serial (port 0) with 19200 baud rate
+  node.begin(19200, Serial);
 }
 
 
@@ -111,21 +103,21 @@ void loop()
   static uint32_t i;
   uint8_t j, result;
   uint16_t data[6];
-
+  
   i++;
-
-  // set word 0 of TX buffer to least-significant word of counter (bits 15..0)
+  
+  // set word 0 of TX buffer to least-significant word of counter (bits 15..0) 
   node.setTransmitBuffer(0, lowWord(i));
-
+  
   // set word 1 of TX buffer to most-significant word of counter (bits 31..16)
   node.setTransmitBuffer(1, highWord(i));
-
-  // slave: write TX buffer to (2) 16-bit registers starting at register 0
-  result = node.writeMultipleRegisters(0, 2);
-
-  // slave: read (6) 16-bit registers starting at register 2 to RX buffer
-  result = node.readHoldingRegisters(2, 6);
-
+  
+  // slave: write TX buffer to (2) 16-bit registers starting at register 0 for the slave 1
+  result = node.writeMultipleRegisters(1, 0, 2);
+  
+  // slave: read (6) 16-bit registers starting at register 2 to RX buffer for the slave 1
+  result = node.readHoldingRegisters(1, 2, 6);
+  
   // do something with data if read is successful
   if (result == node.ku8MBSuccess)
   {
@@ -161,3 +153,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+
+## Modification Author
+
+- Author:: Kauê Abade ([4-20ma@wvfans.net](mailto:kaue.abade@outlook.com))
