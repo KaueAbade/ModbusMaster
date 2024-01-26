@@ -4,6 +4,7 @@
 
   Library:: ModbusMaster
   Author:: Doc Walker <4-20ma@wvfans.net>
+  Modified by:: Kauê Abade <kaue.abade@outlook.com>
 
   Copyright:: 2009-2016 Doc Walker
 
@@ -33,8 +34,8 @@ void setup()
   // use Serial (port 0); initialize Modbus communication baud rate
   Serial.begin(19200);
 
-  // communicate with Modbus slave ID 2 over Serial (port 0)
-  node.begin(2, Serial);
+  // communicate with Modbus slave over Serial (port 0) with 19200 baud rate
+  node.begin(19200, Serial);
 }
 
 
@@ -46,17 +47,17 @@ void loop()
   
   i++;
   
-  // set word 0 of TX buffer to least-significant word of counter (bits 15..0)
+  // set word 0 of TX buffer to least-significant word of counter (bits 15..0) 
   node.setTransmitBuffer(0, lowWord(i));
   
   // set word 1 of TX buffer to most-significant word of counter (bits 31..16)
   node.setTransmitBuffer(1, highWord(i));
   
-  // slave: write TX buffer to (2) 16-bit registers starting at register 0
-  result = node.writeMultipleRegisters(0, 2);
+  // slave: write TX buffer to (2) 16-bit registers starting at register 0 for the slave 1
+  result = node.writeMultipleRegisters(1, 0, 2);
   
-  // slave: read (6) 16-bit registers starting at register 2 to RX buffer
-  result = node.readHoldingRegisters(2, 6);
+  // slave: read (6) 16-bit registers starting at register 2 to RX buffer for the slave 1
+  result = node.readHoldingRegisters(1, 2, 6);
   
   // do something with data if read is successful
   if (result == node.ku8MBSuccess)
