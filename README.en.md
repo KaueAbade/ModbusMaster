@@ -13,7 +13,7 @@ This is a fork of the [ModbusMaster](https://github.com/4-20ma/ModbusMaster) Ard
 
 It adds an Slave Id call to each Modbus function call and a proper T1.5 and T3.5 delay acording to the [Specification and Implementation Guide for MODBUS over serial line](https://www.modbus.org/docs/Modbus_over_serial_line_V1_02.pdf).
 
-Now the begin function takes the baudRate in place of the slave id (`_begin(baudRate, &serial)`) and the functions in itself the slave id as in (`_readHoldingRegisters(slaveId, ReadAddress, ReadQty)`).
+Now the `begin` function takes the baudRate in place of the slave id (`_begin(baudRate, &serial)`) and the functions in itself the slave id as in (`_readHoldingRegisters(slaveId, ReadAddress, ReadQty)`).
 
 
 ## Features
