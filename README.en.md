@@ -1,5 +1,5 @@
 # ModbusMaster
-[![pt-br](https://img.shields.io/badge/lang-pt--br-green.svg)][pt-br]
+[![pt-br](https://img.shields.io/badge/change_-lang-pt--br-green.svg)][pt-br]
 [![GitHub release](https://img.shields.io/github/release/KaueAbade/ModbusMaster.svg?maxAge=3600)][GitHub release]
 [![license](https://img.shields.io/github/license/KaueAbade/ModbusMaster.svg?maxAge=3600)][license]
 
