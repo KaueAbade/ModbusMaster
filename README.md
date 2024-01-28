@@ -1,62 +1,65 @@
 # ModbusMaster
+[![en](https://img.shields.io/badge/lang-en-red.svg)][en]
 [![GitHub release](https://img.shields.io/github/release/KaueAbade/ModbusMaster.svg?maxAge=3600)][GitHub release]
 [![license](https://img.shields.io/github/license/KaueAbade/ModbusMaster.svg?maxAge=3600)][license]
 
+[en]:  https://github.com/KaueAbade/ModbusMaster/blob/master/README.en.md
 [GitHub release]:   https://github.com/KaueAbade/ModbusMaster
 [license]:          LICENSE
 
 
-## Overview
-This is a fork of the [ModbusMaster](https://github.com/4-20ma/ModbusMaster) Arduino library for communicating with Modbus slaves over RS232/485 (via RTU protocol).
+## Visão geral
+Este é um "fork" da biblioteca [ModbusMaster](https://github.com/4-20ma/ModbusMaster) para o Arduino, feita para comunicação com dispositivos por Modbus via RS232/485 (protocolo RTU).
 
-It adds an Slave Id call to each Modbus function call and a proper T1.5 and T3.5 delay acording to the [Specification and Implementation Guide for MODBUS over serial line](https://www.modbus.org/docs/Modbus_over_serial_line_V1_02.pdf).
+Essa modificação foi feita para adicionar uma chamada de "Slave Id" a cada função Modbus e um atraso T1.5 e T3.5 adequado no processo de comunicação, de acordo com o [Guia de especificação e implementação para MODBUS em linha serial] (https://www.modbus.org/docs/Modbus_over_serial_line_V1_02.pdf).
 
-Now the begin function takes the baudRate in place of the slave id (`_begin(baudRate, &serial)`) and the functions in itself the slave id as in (`_readHoldingRegisters(slaveId, ReadAddress, ReadQty)`).
+Agora a função `begin` usa o baudRate no lugar do ID do escravo (`_begin(baudRate, &serial)`) e as funções em si usam o ID do escravo como em (`_readHoldingRegisters(slaveId, ReadAddress, ReadQty)`).
 
-
-## Features
-The following Modbus functions are available:
-
-Discrete Coils/Flags
-
-  - 0x01 - Read Coils
-  - 0x02 - Read Discrete Inputs
-  - 0x05 - Write Single Coil
-  - 0x0F - Write Multiple Coils
-
-Registers
-
-  - 0x03 - Read Holding Registers
-  - 0x04 - Read Input Registers
-  - 0x06 - Write Single Register
-  - 0x10 - Write Multiple Registers
-  - 0x16 - Mask Write Register
-  - 0x17 - Read Write Multiple Registers
-
-Both full-duplex and half-duplex RS232/485 transceivers are supported. Callback functions are provided to toggle Data Enable (DE) and Receiver Enable (/RE) pins.
+Partes dessa descrição são traduzidas do repositório original.
 
 
-## Installation
+## Recursos
+As seguintes funções Modbus estão disponíveis:
 
-#### Zip Library
-Refer to Arduino Tutorials > Libraries [Importing a .zip Library](https://www.arduino.cc/en/Guide/Libraries#toc4).
+Bobinas/Flags discretos
+
+  - 0x01 - Ler bobinas
+  - 0x02 - Ler entradas discretas
+  - 0x05 - Gravar bobina única
+  - 0x0F - Gravar várias bobinas
+
+Registros
+
+  - 0x03 - Ler registros de retenção
+  - 0x04 - Ler registros de entrada
+  - 0x06 - Gravar um registro
+  - 0x10 - Gravar vários registros
+  - 0x16 - Registro de escrita de máscara
+  - 0x17 - Leitura e gravação de vários registros
+
+Há suporte para transceptores RS232/485 full-duplex e half-duplex. As funções de retorno são fornecidas para alternar os pinos `Data Enable (DE)` e `Receiver Enable (/RE)`.
+
+## Instalação
+
+#### Biblioteca Zip
+Consulte Tutoriais do Arduino > Bibliotecas [Importando uma biblioteca .zip] (https://www.arduino.cc/en/Guide/Libraries#toc4).
 
 #### Manual
-Refer to Arduino Tutorials > Libraries [Manual Installation](https://www.arduino.cc/en/Guide/Libraries#toc5).
+Consulte Tutoriais do Arduino > Bibliotecas [Instalação manual] (https://www.arduino.cc/en/Guide/Libraries#toc5).
 
 
 ## Hardware
-This for of the original library has been tested with an Arduino [Uno](http://www.arduino.cc/en/Main/ArduinoBoardDuemilanove) and a Battery Managment controller, connected via RS485 using a Maxim [MAX488EPA](http://www.maxim-ic.com/quick_view2.cfm/qv_pk/1111) transceiver.
+Esta versão da biblioteca foi testada com um Arduino [Uno] (http://www.arduino.cc/en/Main/ArduinoBoardDuemilanove) e um controlador de gerenciamento de bateria, conectado via RS485 usando um transceptor Maxim [MAX488EPA] (http://www.maxim-ic.com/quick_view2.cfm/qv_pk/1111).
 
 
-## Caveats
-As the original library, this fork conforms to Arduino IDE 1.5 Library Specification v2.1 which requires Arduino IDE >= 1.5.
+## Advertências
+Como a biblioteca original, esse "fork" está em conformidade com a especificação da biblioteca Arduino IDE 1.5 v2.1, que requer o Arduino IDE >= 1.5.
 
-Arduinos prior to the Mega have one serial port which must be connected to USB (FTDI) for uploading sketches and to the RS232/485 device/network for running sketches. You will need to disconnect pin 0 (RX) while uploading sketches. After a successful upload, you can reconnect pin 0.
+Os Arduinos anteriores ao Mega têm apenas uma porta serial que deve ser conectada ao USB (FTDI) para carregar esboços e ao dispositivo/rede RS232/485 para executar esboços. Você precisará desconectar o pino 0 (RX) durante o carregamento dos esboços. Após um upload bem-sucedido, você pode reconectar o pino 0.
 
 
-## Example
-The library contains a few modifications of the original sketches from `Doc Walker` to accommodate the modifications made in the `ModbusMaster` library. You can find these in the [examples](https://github.com/KaueAbade/ModbusMaster/tree/master/examples) folder.
+## Exemplo
+A biblioteca contém algumas modificações dos esboços originais de "Doc Walker" para acomodar as modificações feitas na biblioteca "ModbusMaster". Você pode encontrá-las na pasta [examples](https://github.com/KaueAbade/ModbusMaster/tree/master/examples).
 
 ``` cpp
 /*
@@ -131,14 +134,14 @@ void loop()
 }
 ```
 
-_Project inspired by [Arduino Modbus Master](http://sites.google.com/site/jpmzometa/arduino-mbrt/arduino-modbus-master)._
+_Projeto original inspirado por [Arduino Modbus Master](http://sites.google.com/site/jpmzometa/arduino-mbrt/arduino-modbus-master)._
 
 
-## License & Authors
+## Licença & Autores
 
-- Author:: Doc Walker ([4-20ma@wvfans.net](mailto:4-20ma@wvfans.net))
-- Author:: Ag Primatic ([agprimatic@gmail.com](mailto:agprimatic@gmail.com))
-- Author:: Marius Kintel ([marius@kintel.net](mailto:marius@kintel.net))
+- Autor: Doc Walker ([4-20ma@wvfans.net](mailto:4-20ma@wvfans.net))
+- Autor: Ag Primatic ([agprimatic@gmail.com](mailto:agprimatic@gmail.com))
+- Autor: Marius Kintel ([marius@kintel.net](mailto:marius@kintel.net))
 
 ```
 Copyright:: 2009-2016 Doc Walker
@@ -156,6 +159,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-## Modification Author
+## Autor da modificação
 
-- Author:: Kauê Abade ([kaue.abade@outlook.com](mailto:kaue.abade@outlook.com))
+- Autor:: Kauê Abade ([kaue.abade@outlook.com](mailto:kaue.abade@outlook.com))
