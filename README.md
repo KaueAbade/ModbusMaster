@@ -11,7 +11,7 @@
 ## Visão geral
 Este é um "fork" da biblioteca [ModbusMaster](https://github.com/4-20ma/ModbusMaster) para o Arduino, feita para comunicação com dispositivos por Modbus via RS232/485 (protocolo RTU).
 
-Essa modificação foi feita para adicionar uma chamada de "Slave Id" a cada função Modbus e um atraso T1.5 e T3.5 adequado no processo de comunicação, de acordo com o [Guia de especificação e implementação para MODBUS em linha serial] (https://www.modbus.org/docs/Modbus_over_serial_line_V1_02.pdf).
+Essa modificação foi feita para adicionar uma chamada de "Slave Id" a cada função Modbus e um atraso T1.5 e T3.5 adequado no processo de comunicação, de acordo com o [Guia de especificação e implementação para MODBUS em linha serial](https://www.modbus.org/docs/Modbus_over_serial_line_V1_02.pdf).
 
 Agora a função `begin` usa o baudRate no lugar do ID do escravo (`_begin(baudRate, &serial)`) e as funções em si usam o ID do escravo como em (`_readHoldingRegisters(slaveId, ReadAddress, ReadQty)`).
 
