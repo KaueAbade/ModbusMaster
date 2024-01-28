@@ -133,7 +133,7 @@ void loop()
 }
 ```
 
-_Project inspired by [Arduino Modbus Master](http://sites.google.com/site/jpmzometa/arduino-mbrt/arduino-modbus-master)._
+_Original project inspired by [Arduino Modbus Master](http://sites.google.com/site/jpmzometa/arduino-mbrt/arduino-modbus-master)._
 
 
 ## License & Authors
