@@ -64,7 +64,7 @@ void ModbusMaster::begin(uint32_t baud, Stream &serial)
   _serial = &serial;
   _u8TransmitBufferIndex = 0;
   u16TransmitBufferLength = 0;
-  baudRate = 9600;
+  baudRate = baud;
   
   // calculate inter character timeout and frame delay (silent interval)
 	if (baudRate > 19200)
