@@ -31,37 +31,32 @@ Arduino library for communicating with Modbus slaves over RS232/485 (via RTU pro
 
 */
 
-  
+#pragma once
 #ifndef ModbusMaster_h
 #define ModbusMaster_h
-
 
 /**
 @def __MODBUSMASTER_DEBUG__ (0)
 Set to 1 to enable debugging features within class:
   - PIN A cycles for each byte read in the Modbus response
   - PIN B cycles for each millisecond timeout during the Modbus response
-*/
-#define __MODBUSMASTER_DEBUG__ (0)
+
+#define __MODBUSMASTER_DEBUG__
 #define __MODBUSMASTER_DEBUG_PIN_A__ 4
 #define __MODBUSMASTER_DEBUG_PIN_B__ 5
+*/
+
 
 /* _____STANDARD INCLUDES____________________________________________________ */
 // include types & constants of Wiring core API
-#include "Arduino.h"
-
-/* _____UTILITY MACROS_______________________________________________________ */
-
+#include <Arduino.h>
 
 /* _____PROJECT INCLUDES_____________________________________________________ */
-// functions to calculate Modbus Application Data Unit CRC
-#include "util/crc16.h"
-
-// functions to manipulate words
-#include "util/word.h"
 
 
 /* _____CLASS DEFINITIONS____________________________________________________ */
+#include "util/word.h"    // functions to manipulate words
+#include "util/crc16.h"   // functions to calculate Modbus Application Data Unit CRC
 /**
 Arduino class library for communicating with Modbus slaves over 
 RS232/485 (via RTU protocol).
@@ -69,7 +64,7 @@ RS232/485 (via RTU protocol).
 class ModbusMaster
 {
   protected:
-	  uint32_t baudRate;
+	  uint16_t baudRate;
 
     // timing
 	  uint32_t T1_5; // inter character timeout
@@ -78,7 +73,7 @@ class ModbusMaster
   public:
     ModbusMaster();
    
-    void begin(uint32_t, Stream &serial);
+    void begin(uint16_t, Stream &serial);
     void idle(void (*)());
     void preTransmission(void (*)());
     void postTransmission(void (*)());
@@ -96,7 +91,7 @@ class ModbusMaster
     
     @ingroup constant
     */
-    static const uint8_t ku8MBIllegalFunction            = 0x01;
+    static const uint8_t ku8MBIllegalFunction PROGMEM     = 0x01;
 
     /**
     Modbus protocol illegal data address exception.
@@ -116,7 +111,7 @@ class ModbusMaster
     
     @ingroup constant
     */
-    static const uint8_t ku8MBIllegalDataAddress         = 0x02;
+    static const uint8_t ku8MBIllegalDataAddress PROGMEM  = 0x02;
     
     /**
     Modbus protocol illegal data value exception.
@@ -131,7 +126,7 @@ class ModbusMaster
     
     @ingroup constant
     */
-    static const uint8_t ku8MBIllegalDataValue           = 0x03;
+    static const uint8_t ku8MBIllegalDataValue PROGMEM   = 0x03;
     
     /**
     Modbus protocol slave device failure exception.
@@ -141,7 +136,7 @@ class ModbusMaster
     
     @ingroup constant
     */
-    static const uint8_t ku8MBSlaveDeviceFailure         = 0x04;
+    static const uint8_t ku8MBSlaveDeviceFailure PROGMEM = 0x04;
 
     // Class-defined success/exception codes
     /**
@@ -156,7 +151,7 @@ class ModbusMaster
       
     @ingroup constant
     */
-    static const uint8_t ku8MBSuccess                    = 0x00;
+    static const uint8_t ku8MBSuccess PROGMEM            = 0x00;
     
     /**
     ModbusMaster invalid response slave ID exception.
@@ -165,7 +160,7 @@ class ModbusMaster
     
     @ingroup constant
     */
-    static const uint8_t ku8MBInvalidSlaveID             = 0xE0;
+    static const uint8_t ku8MBInvalidSlaveID PROGMEM     = 0xE0;
     
     /**
     ModbusMaster invalid response function exception.
@@ -174,7 +169,7 @@ class ModbusMaster
     
     @ingroup constant
     */
-    static const uint8_t ku8MBInvalidFunction            = 0xE1;
+    static const uint8_t ku8MBInvalidFunction PROGMEM    = 0xE1;
     
     /**
     ModbusMaster response timed out exception.
@@ -184,7 +179,7 @@ class ModbusMaster
     
     @ingroup constant
     */
-    static const uint8_t ku8MBResponseTimedOut           = 0xE2;
+    static const uint8_t ku8MBResponseTimedOut PROGMEM   = 0xE2;
     
     /**
     ModbusMaster invalid response CRC exception.
@@ -193,7 +188,7 @@ class ModbusMaster
     
     @ingroup constant
     */
-    static const uint8_t ku8MBInvalidCRC                 = 0xE3;
+    static const uint8_t ku8MBInvalidCRC PROGMEM         = 0xE3;
     
     uint16_t getResponseBuffer(uint8_t);
     void     clearResponseBuffer();
@@ -227,7 +222,7 @@ class ModbusMaster
   private:
     Stream* _serial;                                             ///< reference to serial port object
     uint8_t  _u8MBSlave;                                         ///< Modbus slave (1..255) initialized in begin()
-    static const uint8_t ku8MaxBufferSize                = 64;   ///< size of response/transmit buffers    
+    static const uint8_t ku8MaxBufferSize PROGMEM        = 64;   ///< size of response/transmit buffers    
     uint16_t _u16ReadAddress;                                    ///< slave register from which to read
     uint16_t _u16ReadQty;                                        ///< quantity of words to read
     uint16_t _u16ResponseBuffer[ku8MaxBufferSize];               ///< buffer to store Modbus slave response; read via GetResponseBuffer()
@@ -242,21 +237,21 @@ class ModbusMaster
     uint8_t _u8ResponseBufferLength;
     
     // Modbus function codes for bit access
-    static const uint8_t ku8MBReadCoils                  = 0x01; ///< Modbus function 0x01 Read Coils
-    static const uint8_t ku8MBReadDiscreteInputs         = 0x02; ///< Modbus function 0x02 Read Discrete Inputs
-    static const uint8_t ku8MBWriteSingleCoil            = 0x05; ///< Modbus function 0x05 Write Single Coil
-    static const uint8_t ku8MBWriteMultipleCoils         = 0x0F; ///< Modbus function 0x0F Write Multiple Coils
+    static const uint8_t ku8MBReadCoils PROGMEM                  = 0x01; ///< Modbus function 0x01 Read Coils
+    static const uint8_t ku8MBReadDiscreteInputs PROGMEM         = 0x02; ///< Modbus function 0x02 Read Discrete Inputs
+    static const uint8_t ku8MBWriteSingleCoil PROGMEM            = 0x05; ///< Modbus function 0x05 Write Single Coil
+    static const uint8_t ku8MBWriteMultipleCoils PROGMEM         = 0x0F; ///< Modbus function 0x0F Write Multiple Coils
 
     // Modbus function codes for 16 bit access
-    static const uint8_t ku8MBReadHoldingRegisters       = 0x03; ///< Modbus function 0x03 Read Holding Registers
-    static const uint8_t ku8MBReadInputRegisters         = 0x04; ///< Modbus function 0x04 Read Input Registers
-    static const uint8_t ku8MBWriteSingleRegister        = 0x06; ///< Modbus function 0x06 Write Single Register
-    static const uint8_t ku8MBWriteMultipleRegisters     = 0x10; ///< Modbus function 0x10 Write Multiple Registers
-    static const uint8_t ku8MBMaskWriteRegister          = 0x16; ///< Modbus function 0x16 Mask Write Register
-    static const uint8_t ku8MBReadWriteMultipleRegisters = 0x17; ///< Modbus function 0x17 Read Write Multiple Registers
+    static const uint8_t ku8MBReadHoldingRegisters PROGMEM       = 0x03; ///< Modbus function 0x03 Read Holding Registers
+    static const uint8_t ku8MBReadInputRegisters PROGMEM         = 0x04; ///< Modbus function 0x04 Read Input Registers
+    static const uint8_t ku8MBWriteSingleRegister PROGMEM        = 0x06; ///< Modbus function 0x06 Write Single Register
+    static const uint8_t ku8MBWriteMultipleRegisters PROGMEM     = 0x10; ///< Modbus function 0x10 Write Multiple Registers
+    static const uint8_t ku8MBMaskWriteRegister PROGMEM          = 0x16; ///< Modbus function 0x16 Mask Write Register
+    static const uint8_t ku8MBReadWriteMultipleRegisters PROGMEM = 0x17; ///< Modbus function 0x17 Read Write Multiple Registers
     
     // Modbus timeout [milliseconds]
-    static const uint16_t ku16MBResponseTimeout          = 2000; ///< Modbus timeout [milliseconds]
+    static const uint16_t ku16MBResponseTimeout PROGMEM          = 500; ///< Modbus timeout [milliseconds]
     
     // master function that conducts Modbus transactions
     uint8_t ModbusMasterTransaction(uint8_t u8MBFunction);

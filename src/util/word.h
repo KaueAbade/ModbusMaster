@@ -32,9 +32,9 @@ This header file provides utility functions for manipulating words.
 
 */
 
-
-#ifndef _UTIL_WORD_H_
-#define _UTIL_WORD_H_
+#pragma once
+#ifndef _util_word_h
+#define _util_word_h
 
 
 /** @ingroup util_word

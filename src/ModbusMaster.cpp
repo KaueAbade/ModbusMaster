@@ -30,9 +30,6 @@ Arduino library for communicating with Modbus slaves over RS232/485 (via RTU pro
 #include "ModbusMaster.h"
 
 
-/* _____GLOBAL VARIABLES_____________________________________________________ */
-
-
 /* _____PUBLIC FUNCTIONS_____________________________________________________ */
 /**
 Constructor.
@@ -51,14 +48,14 @@ ModbusMaster::ModbusMaster(void)
 /**
 Initialize class object.
 
-Assigns the Modbus slave ID and serial port.
+Assigns the baudRate and serial port.
 Call once class has been instantiated, typically within setup().
 
-@param slave Modbus slave ID (1..255)
+@param baud rate (bps) for serial communication
 @param &serial reference to serial port object (Serial, Serial1, ... Serial3)
 @ingroup setup
 */
-void ModbusMaster::begin(uint32_t baud, Stream &serial)
+void ModbusMaster::begin(uint16_t baud, Stream &serial)
 {
 //  txBuffer = (uint16_t*) calloc(ku8MaxBufferSize, sizeof(uint16_t));
   _serial = &serial;
@@ -77,13 +74,16 @@ void ModbusMaster::begin(uint32_t baud, Stream &serial)
 		T1_5 = 16500000 / baudRate; // 1 packet = 11 bits
 		T3_5 = 38500000 / baudRate; // 1 packet = 11 bits
 	}
+  
+  _serial->flush();    // flush transmit buffer
+  clearResponseBuffer();
+  clearTransmitBuffer();
 
-#if __MODBUSMASTER_DEBUG__
+#ifdef __MODBUSMASTER_DEBUG__
   pinMode(__MODBUSMASTER_DEBUG_PIN_A__, OUTPUT);
   pinMode(__MODBUSMASTER_DEBUG_PIN_B__, OUTPUT);
 #endif
 }
-
 
 void ModbusMaster::beginTransmission(uint16_t u16Address)
 {
@@ -107,7 +107,6 @@ uint8_t ModbusMaster::requestFrom(uint16_t address, uint16_t quantity)
 
   return read;
 }
-
 
 void ModbusMaster::sendBit(bool data)
 {
@@ -147,14 +146,6 @@ void ModbusMaster::send(uint8_t data)
   send(word(data));
 }
 
-
-
-
-
-
-
-
-
 uint8_t ModbusMaster::available(void)
 {
   return _u8ResponseBufferLength - _u8ResponseBufferIndex;
@@ -172,13 +163,6 @@ uint16_t ModbusMaster::receive(void)
     return 0xFFFF;
   }
 }
-
-
-
-
-
-
-
 
 /**
 Set idle time callback function (cooperative multitasking).
@@ -754,25 +738,25 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
   {
     if (_serial->available())
     {
-#if __MODBUSMASTER_DEBUG__
+#ifdef __MODBUSMASTER_DEBUG__
       digitalWrite(__MODBUSMASTER_DEBUG_PIN_A__, true);
 #endif
       u8ModbusADU[u8ModbusADUSize++] = _serial->read();
       u8BytesLeft--;
-#if __MODBUSMASTER_DEBUG__
+#ifdef __MODBUSMASTER_DEBUG__
       digitalWrite(__MODBUSMASTER_DEBUG_PIN_A__, false);
 #endif
     }
     else
     {
-#if __MODBUSMASTER_DEBUG__
+#ifdef __MODBUSMASTER_DEBUG__
       digitalWrite(__MODBUSMASTER_DEBUG_PIN_B__, true);
 #endif
       if (_idle)
       {
         _idle();
       }
-#if __MODBUSMASTER_DEBUG__
+#ifdef __MODBUSMASTER_DEBUG__
       digitalWrite(__MODBUSMASTER_DEBUG_PIN_B__, false);
 #endif
     }
@@ -901,11 +885,6 @@ uint8_t ModbusMaster::ModbusMasterTransaction(uint8_t u8MBFunction)
         break;
     }
   }
-
-  // -----------------------------------
-	// - post response delay (this proved necessary when trying to call one slave after the other)
-  delay(50);
-	// -----------------------------------
   
   _u8TransmitBufferIndex = 0;
   u16TransmitBufferLength = 0;
